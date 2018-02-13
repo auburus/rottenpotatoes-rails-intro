@@ -13,20 +13,21 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.get_all_ratings
 
+    @sorting = session.has_key?(:sorting) ? session[:sorting] : nil
+    @ratings = session.has_key?(:ratings) ? session[:ratings] : @all_ratings
+
     if params.has_key?(:sort) and Movie.column_names.include? params[:sort]
       @sorting = params[:sort]
+      session[:sorting] = @sorting
     end
 
-    if params.has_key?(:ratings)
-      @ratings = params[:ratings].keys
-    else
-      # If there are no ratings specified, select all ratings
-      @ratings = @all_ratings
+    if params.has_key?(:commit)
+      @ratings = params.has_key?(:ratings) ? params[:ratings].keys : []
+      session[:ratings] = @ratings
     end
 
     @movies = Movie.where(rating: @ratings)
                    .order(@sorting)
-
   end
 
   def new
@@ -56,5 +57,6 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
+
 
 end
