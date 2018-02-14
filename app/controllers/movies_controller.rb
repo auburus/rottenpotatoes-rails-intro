@@ -23,7 +23,14 @@ class MoviesController < ApplicationController
 
     if params.has_key?(:commit)
       @ratings = params.has_key?(:ratings) ? params[:ratings].keys : []
+      @ratings = @ratings.select{ |x| @all_ratings.include? x}
       session[:ratings] = @ratings
+    end
+
+    # Redirect to the "restful" url
+    unless params.has_key?(:sort) and params.has_key?(:commit)
+      _ratings = Hash[@ratings.map {|x| ["ratings[#{x}]", 1]}]
+      redirect_to({action: 'index', sort: @sorting, commit: 'Refresh'}.merge(_ratings))
     end
 
     @movies = Movie.where(rating: @ratings)
