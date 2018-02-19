@@ -30,7 +30,7 @@ class MoviesController < ApplicationController
     # Redirect to the "restful" url
     unless params.has_key?(:sort) and params.has_key?(:commit)
       _ratings = Hash[@ratings.map {|x| ["ratings[#{x}]", 1]}]
-      redirect_to({action: 'index', sort: @sorting, commit: 'Refresh'}.merge(_ratings))
+      redirect_to({action: 'index', sort: (@sorting.nil? ? "" : @sorting), commit: 'Refresh'}.merge(_ratings))
     end
 
     @movies = Movie.where(rating: @ratings)
